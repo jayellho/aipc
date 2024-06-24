@@ -15,9 +15,12 @@ resource "docker_volume" "data-vol" {
 }
 
 resource "docker_container" "bgg-database" {
+    name = "my-sgp-bgg-database"
+    image = docker_image.bgg-database.image_id
     networks_advanced {
         name = docker_network.bgg-net.id
     }
+
     ports {
         internal = 3306
         external = 3306
@@ -43,7 +46,56 @@ resource "docker_container" "bgg-backend" {
         "BGG_DB_HOST=${docker_container.bgg-database.name}"
     ]
 
-    ports = {
+    ports {
         internal = 3000
     }    
+}
+
+resource "local_file" "nginx_conf" {
+    filename = "nginx.conf"
+    content = templatefile("nginx.conf.tftpl", {
+        docker_host = var.docker_host,
+        ports = [docker_container.bgg-backend[*].ports[*].external]
+    })
+}
+
+resource "digitalocean_droplet" "nginx" {
+    name = "jl-nginx"
+    image = var.do_image
+    region = var.do_region
+    size = var.do_size
+    
+    ssh_keys = [data.digitalocean_ssh_key.www-1.id]
+
+    connection {
+        type = "ssh"
+        user = "root"
+        private_key = file(var.ssh_private_key)
+        host = self.ipv4_address
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "apt update -y",
+            "apt install nginx -y"
+        ]
+    }
+
+    provisioner "file" {
+        source = local_file.nginx-conf.filename
+        destination = "/etc/nginx/nginx.conf"
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "systemctl enable nginx",
+            "systemctl restart nginx"
+        ]
+    }
+}
+
+resource "local_file" "root_at_nginx" {
+    filename = "root@${digitalocean_droplet.nginx.ipv4_address}"
+    content = ""
+    file_permission = "0444"
 }
