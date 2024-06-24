@@ -12,3 +12,5 @@
     - ```terraform plan -var="do_token=${DO_PAT}"```
     - ```terraform apply -var="do_token=${DO_PAT}"```
 
+## For VSC
+- Automate formatting: ```Ctrl+Shift+I```
