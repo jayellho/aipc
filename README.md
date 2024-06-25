@@ -31,7 +31,9 @@
 ## References
 - Instructor's Github: https://github.com/darryl1975
 - Instructor's Github repository for setup of control server: https://github.com/darryl1975/AIPC_day01_setup
-- Instructor's Github for day 2: https://github.com/kenken64/NUSISS-DevOpsEng/blob/master/workshop/workshop3-1.md
+- Instructor's Github for day 2:
+	- https://github.com/kenken64/NUSISS-DevOpsEng/blob/master/workshop/workshop3-1.md
+	- https://github.com/kenken64/aipc-workshop-day02
 
 ## Useful tools to consider
 - WarpAI (something like Microsoft Copilot): https://www.warp.dev/warp-ai
